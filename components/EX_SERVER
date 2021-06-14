@@ -1,0 +1,81 @@
+package com.lgcns.test;
+
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.*;
+import java.util.logging.Logger;
+
+public class RunManager {
+	
+	private static final int PORT_NUMBER = 5000;
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		System.out.println(":::                                                :::");
+		System.out.println(":::       Socket Application  Process Start        :::");
+		System.out.println(":::                                                :::");
+		
+		try(ServerSocket server = new ServerSocket(PORT_NUMBER)){
+			while(true){
+				Socket connection = server.accept(); // 클라이언트 소켓 연결 대기, 계속 대기하다가 클라이언트에서 new Socket(ip, port)한 순간 1:1통신하는 socket 리턴
+				Thread task = new SocketThreadServer(connection);
+				task.start();
+			}
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+
+	}
+	
+
+}
+
+class SocketThreadServer extends Thread {
+	
+//	private static final Logger logger = Logger.getLogger(SocketThreadServer.class);
+	
+	private Socket socket;
+
+	public SocketThreadServer(Socket socket){
+		this.socket=socket;
+	}
+	
+	//단순 문자열 Thread server
+	public void run(){
+		BufferedReader br = null;
+		PrintWriter pw = null;
+		try{
+			String connIp = socket.getInetAddress().getHostAddress();
+			System.out.println(connIp + "에서 연결 시도.");
+			
+			/*
+			 * 접근한 소켓 계정의 ip를 체크한다. KTOA 연동 모듈인지 체크 
+			 * 정상이면 먼저 정상 접근되었음을 알린다.
+			 **/
+			br = new BufferedReader(
+			        new InputStreamReader(socket.getInputStream()));
+			
+			pw = new PrintWriter(socket.getOutputStream());
+			
+			// 클라이언트에서 보낸 문자열 출력
+			System.out.println(br.readLine()); // 받을때(pw.flush())까지 기다림
+			
+			// 클라이언트에 문자열 전송
+//			pw.println("수신되었다. 오버");
+//			pw.flush();		
+		}catch(IOException e){
+			e.printStackTrace();
+//			logger.error(e);
+		}finally{
+			try{
+				if(pw != null) { pw.close();}
+				if(br != null) { br.close();}
+				if(socket != null){socket.close();}
+			}catch(IOException e){
+				e.printStackTrace();
+//				logger.error(e);
+			}
+		}
+	}
+}
