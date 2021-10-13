@@ -21,7 +21,11 @@ public class Run {
 			list.add(line);
 		}
 		
-		File outFile = new File(".//OUTPUT.TXT");
+		File outFolder = new File(".//OUTXX");
+		if(!outFolder.exists()) {
+			outFolder.mkdirs(); 
+		}
+		File outFile = new File(".//OUTXX//OUTPUT.TXT");
 		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(outFile));
 		BufferedWriter bw = new BufferedWriter(osw);
 
@@ -51,4 +55,5 @@ public class Run {
 		}
 		return null;
 	}
+
 }
