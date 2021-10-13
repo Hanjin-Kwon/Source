@@ -1,0 +1,54 @@
+package validator;
+
+import java.util.*;
+import java.io.*;
+
+public class Run {
+
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		
+		File file = new File("..//CLIENT");
+		
+		File targetFile = findFile(file, "INSPECTOR.TXT");
+		
+		InputStreamReader isr = new InputStreamReader(new FileInputStream(targetFile));
+		BufferedReader br = new BufferedReader(isr);
+		ArrayList<String> list = new ArrayList<String>();
+		
+		String line;
+		while((line = br.readLine()) != null) {
+			list.add(line);
+		}
+		
+		File outFile = new File(".//OUTPUT.TXT");
+		OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(outFile));
+		BufferedWriter bw = new BufferedWriter(osw);
+
+		for(int i = 0 ; i < list.size() ; i++) {
+			bw.write(list.get(i));
+			if(i != (list.size() - 1)) bw.newLine();
+		}
+		
+		bw.flush();
+		bw.close();
+
+	}
+	
+	public static File findFile(File rootFile, String fileName) {
+		if(rootFile.exists()) {
+			// get all the files from a directory
+			File[] fList = rootFile.listFiles();
+			for (File file : fList) {
+				if(file.isDirectory()) {
+					System.out.println("Folder >> " + file.getName());
+					findFile(file, fileName);
+				} else {
+					// TO DO : logic of equals fileName or something
+					return file;
+				}
+			}
+		}
+		return null;
+	}
+}
