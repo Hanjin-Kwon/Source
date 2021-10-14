@@ -1,0 +1,54 @@
+package fileTransClient;
+
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.io.*;
+
+public class FileTransClient {
+
+	public static void main(String[] args) throws Exception  {
+		HttpClient httpClient = new HttpClient();
+		httpClient.start();
+		
+		File directory = new File(".//DirDir");
+        File[] fList = directory.listFiles();
+        for (File file : fList) {
+        	JsonObject jsonObj = new JsonObject();
+        	String fileName = file.getName();
+        	String fileContent = null;
+
+			fileContent = new String(Files.readAllBytes(Paths.get(".//DirDir//"+fileName)));
+        	jsonObj.addProperty("FileName", fileName);    		
+        	jsonObj.addProperty("FileContent",  fileContent);
+    		String httpBody = jsonObj.toString();
+    		
+    		Request request = httpClient.newRequest("http://127.0.0.1:8080/fileList").method(HttpMethod.POST);
+    		request.header(HttpHeader.CONTENT_TYPE, "application/json");
+    		request.content(new StringContentProvider(httpBody,"utf-8"));
+    		
+    		ContentResponse contentRes = null;
+
+    		contentRes = request.send();
+    		System.out.println(contentRes.getContentAsString());
+    		
+        }		        
+		httpClient.stop();	
+		
+	}
+}
