@@ -1,0 +1,89 @@
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.io.*;
+
+public class JsonFileSave {	
+	
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		
+//		{
+//			"name":"spiderman",
+//			"age":45,
+//			"married":true,
+//			"specialty":["martial art", "gun"],
+//			"vaccine":{"1st":"done","2nd":"expected","3rd":null},
+//			"children": [{"name":"spiderboy", "age":10}, {"name":"spidergirl", "age":8}],
+//			"adress":null
+//		}
+		
+		JsonObject jsonObj = new JsonObject();
+		jsonObj.addProperty("name", "spiderman");
+		jsonObj.addProperty("age", 45);
+		jsonObj.addProperty("married", true);
+		
+		JsonArray jsonArr1 = new JsonArray();
+		jsonArr1.add("martial art");
+		jsonArr1.add("gun");
+		jsonObj.add("specialty", jsonArr1);
+		
+		JsonObject vaccine = new JsonObject();
+		vaccine.addProperty("1st", "done");
+		vaccine.addProperty("2nd", "expected");
+		vaccine.add("3rd", null);
+		jsonObj.add("vaccine", vaccine);
+		
+		JsonArray jsonArr2 = new JsonArray();
+		JsonObject aInfo = new JsonObject();
+		aInfo.addProperty("name", "spiderboy");
+		aInfo.addProperty("age", 10);
+		JsonObject bInfo = new JsonObject();
+		bInfo.addProperty("name", "spidergirl");
+		bInfo.addProperty("age", 8);
+		jsonArr2.add(aInfo);
+		jsonArr2.add(bInfo);
+		jsonObj.add("children", jsonArr2);
+		
+		jsonObj.add("adress", null);
+		
+		System.out.println(jsonObj.toString());
+		FileWriter fw = null;
+		
+		
+	    
+		
+//		try {
+//			fw = new FileWriter(".//sample.json");
+//			Gson gson = new GsonBuilder().serializeNulls().create();
+//			gson.toJson(jsonObj, fw);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		fw.close();
+        try (Writer writer = new FileWriter(".//sample.json")) {
+		    Gson gsons = new GsonBuilder().serializeNulls().create();
+		    gsons.toJson(jsonObj, writer);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+}
